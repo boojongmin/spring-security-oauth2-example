@@ -1,0 +1,20 @@
+### Grant Type: password
+POST http://client1:client1@localhost:8080/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&username=user&password=password
+
+### Grant Type: client_credentials
+POST http://client1:client1@localhost:8080/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&scope=read write
+# grant_type=client_credentials&scope=read
+
+### Grant Type: refresh_token
+POST http://client1:client1@localhost:8080/oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token&scope=read write&refresh_token=eb12b382-8ca6-411b-aefb-fcb7a7472f89
+
+###

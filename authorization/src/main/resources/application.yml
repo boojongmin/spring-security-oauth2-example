@@ -1,0 +1,23 @@
+spring:
+  session:
+    store-type: redis
+    timeout: 5m
+  datasource:
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+  redis:
+    host: localhost
+logging:
+  level:
+    root: info
+    org.springframework.security: debug
+    example.oauth2: debug
