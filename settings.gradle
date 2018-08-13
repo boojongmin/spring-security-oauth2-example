@@ -1,0 +1,6 @@
+rootProject.name = 'authorization'
+
+//include 'common'
+include 'authorization'
+include 'resource'
+include 'member'
