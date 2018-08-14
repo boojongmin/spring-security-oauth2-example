@@ -10,42 +10,39 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
-@Order(1)
+@Order(100)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService userDetailsService;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception { // @formatter:off
-        http.requestMatchers()
-            .antMatchers("/login", "/oauth/authorize")
-            .and()
-            .authorizeRequests()
-            .anyRequest()
-//            .hasAuthority("ROLE_ADMIN")
-            .authenticated()
-            .and()
-            .formLogin()
-            .permitAll();
-        // add for h2 console
+	@Override
+	protected void configure(HttpSecurity http) throws Exception { // @formatter:off
+		http
+			.authorizeRequests()
+			.antMatchers("/h2-console**", "/h2-console/**").permitAll()
+			.anyRequest()
+			.authenticated()
+			.and()
+			.formLogin()
+			.permitAll();
+		// add for h2 console
 //        http.headers().frameOptions().disable();
-        http.csrf().disable();
-    } // @formatter:on
+		http.csrf().disable();
+	} // @formatter:on
 
-    /**
-     * AuthorizationServerConfig에서 @Autowired로 필요함
-     */
-    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+	/**
+	 * AuthorizationServerConfig에서 @Autowired로 필요함
+	 */
+	@Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
-    }
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService);
+	}
 }

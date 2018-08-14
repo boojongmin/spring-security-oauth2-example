@@ -1,38 +1,34 @@
 package example.oauth2.authentication.entity;
 
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Data
+@EqualsAndHashCode(of = "id")
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class Member {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
 	private String userId;
 	private String password;
-	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-	private List<Role> roles;
-
-	public Member() {}
-
-	public Member(String userId, String password, List<Role> roles) {
-		this.userId = userId;
-		this.password = password;
-		roles.forEach(x -> x.setMember(this));
-		this.roles = roles;
-	}
+	@ElementCollection
+	@CollectionTable( name = "role", joinColumns = @JoinColumn(name = "member_id"))
+	private List<String> roles = new ArrayList<>();
 
 	public UserDetails getUserDetails() {
-		final List<GrantedAuthority> authorities = roles.stream().map(Role::getGrantedAuthority).collect(toList());
-		return User.withUsername(this.userId).password(password).authorities(authorities).build();
+		String[] roleArr = new String[this.roles.size()];
+		roles.toArray(roleArr);
+		return User.withUsername(this.userId).password(password).roles(roleArr).build();
 	}
 }

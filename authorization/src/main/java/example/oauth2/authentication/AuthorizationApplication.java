@@ -1,14 +1,12 @@
 package example.oauth2.authentication;
 
 import example.oauth2.authentication.entity.Member;
-import example.oauth2.authentication.entity.Role;
 import example.oauth2.authentication.repository.MemberRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import redis.embedded.RedisServer;
 
 import java.io.IOException;
@@ -17,7 +15,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 @SpringBootApplication
-@EnableResourceServer
 public class AuthorizationApplication {
 	@Autowired
 	MemberRespository memberRespository;
@@ -25,8 +22,10 @@ public class AuthorizationApplication {
 	@Bean
 	public CommandLineRunner runner() {
 		return args -> {
-			List<Role> roles = asList(new Role("USER"), new Role("ADMIN"));
-			final Member member = new Member("user", "{noop}password", roles);
+			List<String> roles = asList("USER", "ADMIN");
+			final Member member = Member.builder()
+				.userId("user").password("{noop}password").roles(roles)
+				.build();
 			memberRespository.save(member);
 		};
 	}
