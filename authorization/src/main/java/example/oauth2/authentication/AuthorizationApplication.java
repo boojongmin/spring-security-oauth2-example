@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import redis.embedded.RedisServer;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 @SpringBootApplication
+@EnableResourceServer
 public class AuthorizationApplication {
 	@Autowired
 	MemberRespository memberRespository;

@@ -1,0 +1,23 @@
+server:
+  port: 8081
+security:
+  basic:
+    enabled: false
+#  session:
+#    cookie:
+#      name: UISESSION
+  oauth2:
+    client:
+      clientId: client2
+      clientSecret: client2
+      accessTokenUri: http://localhost:8080/oauth/token
+      userAuthorizationUri: http://localhost:8080/oauth/authorize
+    # authorization 설정에 resource id를 넣으면 문제가 발생. optional한 정보라서 빼고 진행.
+    #      resource-ids: testClient
+    resource:
+      userInfoUri: http://localhost:8080/api/v1/userinfo
+logging:
+  level:
+    root: info
+    org.springframework.security: debug
+    example.oauth2: debug
