@@ -8,29 +8,33 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 @Configuration
 @Order(100)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+//@Order(SecurityProperties.BASIC_AUTH_ORDER + 10)
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService userDetailsService;
 
 	@Override
-	protected void configure(HttpSecurity http) throws Exception { // @formatter:off
+	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers("/static/**", "/h2-console/**");
+	}
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
 		http
+//			.antMatcher("/**")
 			.authorizeRequests()
-			.antMatchers("/h2-console**", "/h2-console/**").permitAll()
 			.anyRequest()
 			.authenticated()
 			.and()
 			.formLogin()
 			.permitAll();
-		// add for h2 console
-//        http.headers().frameOptions().disable();
-		http.csrf().disable();
-	} // @formatter:on
+	}
 
 	/**
 	 * AuthorizationServerConfig에서 @Autowired로 필요함

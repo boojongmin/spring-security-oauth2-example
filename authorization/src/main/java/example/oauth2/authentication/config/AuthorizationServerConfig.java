@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
@@ -24,6 +25,8 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableAuthorizationServer
+@Order(0)
+//@Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 	@Autowired
 	private TokenStore tokenStore;
@@ -58,6 +61,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	public void configure(AuthorizationServerSecurityConfigurer security) {
 		security.tokenKeyAccess("permitAll()");
 		security.checkTokenAccess("isAuthenticated()");
+//		client 인증 http basic auth 대신 form authentication 지원하는 기능인데 동작하지 않아 주석 처리함.
+//		security.allowFormAuthenticationForClients();
 	}
 
 	@Override

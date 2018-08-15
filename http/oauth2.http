@@ -1,8 +1,19 @@
-### Grant Type: password
+### Grant Type: password basic auth
 POST http://client2:client2@localhost:8080/oauth/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=password&username=user&password=password
+
+
+### 참고
+### security.allowFormAuthenticationForClients() 설저을 추가하고 시도해봤는데 잘 안됨.
+### http basic authentication 사용하는 것으로 정리
+### https://github.com/spring-projects/spring-security-oauth/issues/1058
+### Grant Type: password(2) form login
+#POST http://localhost:8080/oauth/token
+#Content-Type: application/x-www-form-urlencoded
+#
+#grant_type=password&client_id=client2&client_password=client2&username=user&password=password
 
 ### Grant Type: client_credentials
 POST http://client1:client1@localhost:8080/oauth/token
@@ -17,16 +28,16 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=refresh_token&scope=read write&refresh_token=eb12b382-8ca6-411b-aefb-fcb7a7472f89
 
+### Grant Type: authorization_code
+### authorization_code 흐름
 
-
-### authorization_code flow
-### http://localhost:8080/oauth/authorize?client_id=client2&redirect_uri=http://localhost:8081/login&response_type=code&state=0vE3q9
-GET http://localhost:8080/api/v1/userinfo
-Content-Type: application/x-www-form-urlencoded
-Authorization: Bearer 0d2cc9d0-6cde-4553-baa2-5e3a4db9bca4
-
-
-#http://localhost:8081/login?code=HC5ZEM&state=0vE3q9
+### 1. [Resource] resource server web browser에서 authorization server로 호출(http://localhost:8080/oauth/authorize?client_id=client2&redirect_uri=http://localhost:8081/login&response_type=code&state=0vE3q9)
+### 2. [Authorization] login page redirect
+### 3. [Authorization] login(id/password)
+### 4. [Authorization] redirect after login success -> http://localhost:8080/oauth/authorize?client_id=client2&redirect_uri=http://localhost:8081/login&response_type=code&state=0vE3q9
+### 5. [Authorization] scope confirm
+### 6. [Resource] resource server에 code 전달
+### 7. [Resource] authorization server에 코드 전달하여(아래 api 참조) access/refresth 토큰 받음.
 
 ###
 POST http://client2:client2@localhost:8080/oauth/token
@@ -34,6 +45,13 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=authorization_code&code=h5mPlh&state=0vE3q9&redirect_uri=http://localhost:8081/login
 
+### 사용자 정보 조회
+GET http://localhost:8080/api/v1/userinfo
+Content-Type: application/x-www-form-urlencoded
+Authorization: Bearer 0d2cc9d0-6cde-4553-baa2-5e3a4db9bca4
+
+### 0번째 필터 public resource: /public/**
+GET http://localhost:8080/static/static_file.txt
 
 ### 1번째 필터 oauth server : /oauth/** [/oauth/authorize, /oauth/token, /oauth/check_token, /oauth/confirm_access, /oauth/token_key, /oauth/error]
 POST http://client2:client2@localhost:8080/oauth/check_token
@@ -46,6 +64,8 @@ GET http://localhost:8080/api/v1/userinfo
 Authorization: Bearer 0d2cc9d0-6cde-4553-baa2-5e3a4db9bca4
 
 ### 3번째 필터 web security : /**
+### session에 인증 정보가 없으므로 api 호출후 login page html 노출
 GET http://localhost:8080/test
 
+###
 

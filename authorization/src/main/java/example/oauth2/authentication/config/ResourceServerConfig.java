@@ -8,7 +8,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 
 @Configuration
 @EnableResourceServer
-@Order(10)
+@Order(50)
+//@Order(SecurityProperties.BASIC_AUTH_ORDER)
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
