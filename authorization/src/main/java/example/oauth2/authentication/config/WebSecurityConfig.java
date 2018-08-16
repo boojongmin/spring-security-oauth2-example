@@ -27,7 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
-//			.antMatcher("/**")
+//			모든 url 적용
 			.authorizeRequests()
 			.anyRequest()
 			.authenticated()
