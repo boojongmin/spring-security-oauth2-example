@@ -1,22 +1,19 @@
 package example.oauth2.authentication.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
@@ -32,13 +29,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	private TokenStore tokenStore;
 	@Autowired
 	private ClientDetailsService clientDetailsService;
-	@Autowired @Qualifier(BeanIds.USER_DETAILS_SERVICE)
-	private UserDetailsService userDetailsService;
 	@Autowired
-	private JdbcAuthorizationCodeServices jdbcAuthorizationCodeServices;
+	private AuthorizationCodeServices authorizationCodeServices;
 	@Autowired
 	private AuthenticationManager authenticationManager;
-
+//	@Autowired @Qualifier(BeanIds.USER_DETAILS_SERVICE)
+//	private UserDetailsService userDetailsService;
 	@Bean
 	public TokenStore tokenStore(RedisConnectionFactory redisConnectionFactory) {
 		return new RedisTokenStore(redisConnectionFactory);
@@ -46,14 +42,16 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 	@Bean
 	@Primary
-	public JdbcClientDetailsService jdbcClientDetailsService(DataSource dataSource) {
+	// @Primary가 없으면 oauth 기본  ClientDetailsService를 사용. InMemory
+	public ClientDetailsService jdbcClientDetailsService(DataSource dataSource) {
 		final JdbcClientDetailsService jdbcClientDetailsService = new JdbcClientDetailsService(dataSource);
 		return jdbcClientDetailsService;
 	}
 
 	@Bean
 	@Primary
-	public JdbcAuthorizationCodeServices jdbcAuthorizationCodeServices(DataSource dataSource) {
+	// @Primary가 없으면 oauth 기본  AuthorizationCodeServices를 사용. InMemory
+	public AuthorizationCodeServices jdbcAuthorizationCodeServices(DataSource dataSource) {
 		return new JdbcAuthorizationCodeServices(dataSource);
 	}
 
@@ -67,10 +65,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
-		endpoints.authenticationManager(authenticationManager).tokenStore(tokenStore);
+		endpoints.authenticationManager(authenticationManager);
 		endpoints.tokenStore(tokenStore);
-		endpoints.userDetailsService(userDetailsService);
+//		userDetailsService authenticationManger를 생성시 이미 들어간 정보이므로 넣지 않음
+//		endpoints.userDetailsService(userDetailsService);
 		endpoints.setClientDetailsService(clientDetailsService);
-		endpoints.authorizationCodeServices(jdbcAuthorizationCodeServices).userApprovalHandler(new DefaultUserApprovalHandler());
+		endpoints.authorizationCodeServices(authorizationCodeServices);
 	}
 }
