@@ -40,7 +40,7 @@ OAUTH 2.0은 [rfc6749](https://tools.ietf.org/html/rfc6749)을 통해 표준화�
         - response: access_token, refresh_token, token_type[, expires_in]
         - 일반적으로 app에서 토큰을 받기위해 사용.
         - 참고: client_id/password는 resource 서버에서 보관. client는 모른다.
-        ```
+        > 
              +----------+
              | Resource |
              |  Owner   |
@@ -58,13 +58,13 @@ OAUTH 2.0은 [rfc6749](https://tools.ietf.org/html/rfc6749)을 통해 표준화�
              |         |<--(C)---- Access Token ---------<|               |
              |         |    (w/ Optional Refresh Token)   |               |
              +---------+                                  +---------------+
-        ```
+        
     - **client credentials** grant type
         - request: grant_type=client, client_id, client_password
         - response: access_token, token_type[, expires_in]
         - 사용자별 접근제어는 필요하지 않지만 client(app/browser) 접근 제어하기 위해 사용.
         - 참고: user_id를 전달하지 않으므로 user 정보 조회를 할 수 없다.
-        ```
+        > 
              +---------+                                  +---------------+
              |         |                                  |               |
              |         |>--(A)- Client Authentication --->| Authorization |
@@ -72,7 +72,6 @@ OAUTH 2.0은 [rfc6749](https://tools.ietf.org/html/rfc6749)을 통해 표준화�
              |         |<--(B)---- Access Token ---------<|               |
              |         |                                  |               |
              +---------+                                  +---------------+
-        ``` 
         
     - **authorization_code** grant type
         - request: client_id, user_id, user_password, response_type=code[, redirect_uri][, scope][, state]
@@ -80,7 +79,7 @@ OAUTH 2.0은 [rfc6749](https://tools.ietf.org/html/rfc6749)을 통해 표준화�
             1. code
             2. access_token, token_type[, expires_in]
         - 주로 브라우저에서 인증 대행(로그인을 authorization server에서 진행)을하기 위해 사용. 결과적으로 resource server에 session 정보가 생성되기 때문에 헤더에 token을 추가할 필요 없이 cookie값으로 권한 체크가 가능
-        ```
+        >
              +----------+
              | Resource |
              |   Owner  |
@@ -106,12 +105,11 @@ OAUTH 2.0은 [rfc6749](https://tools.ietf.org/html/rfc6749)을 통해 표준화�
              |         |                                             |
              |         |<---(E)----- Access Token -------------------'
              +---------+       (w/ Optional Refresh Token)
-
-        ```
+        
     - **implicit** grant type
         - request: response_type=token, client_id[, redirect_uri][, scope][, state]
         - response: access_token, token_type[, expires_in][, scope][, state]
-        ```
+        >
              +----------+
              | Resource |
              |  Owner   |
@@ -144,7 +142,7 @@ OAUTH 2.0은 [rfc6749](https://tools.ietf.org/html/rfc6749)을 통해 표준화�
              |  Client |
              |         |
              +---------+
-        ```
+        
     - **refresh** grant type(RFC에는 없지만 spring security oauth에는 있음.)
         - request: fresh token
         - response: access_token, refresh_token, token_type[, expires_in]        
@@ -236,7 +234,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		// client 관련 인증 담당하는 서비스 설정, http basic authentication으로 client 인증 진행.
 		endpoints.authorizationCodeServices(authorizationCodeServices).userApprovalHandler(new DefaultUserApprovalHandler());
 		// authorization_code 방식에서 authorization server에서 resource 서버로 전달하는 code 관리 및 검증할 때 사용되는 서비스를 설정
-		// 
 	}
 ```
  
